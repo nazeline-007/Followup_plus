@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FollowUp+</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+
+<div class="container mx-auto max-w-3xl px-4 py-10">
+  <h1 class="text-4xl font-bold text-indigo-900 text-center">FollowUp+</h1>
+
+  <div class="bg-white p-6 rounded-lg shadow mt-8">
+    <input type="file" id="pdfInput" accept=".pdf">
+    <button onclick="analyze()" class="mt-4 bg-green-600 text-white px-4 py-2 rounded">
+      Analyze Report
+    </button>
+    <pre id="output" class="mt-4 text-sm text-gray-700 whitespace-pre-wrap"></pre>
+  </div>
+</div>
+
+<script>
+let reportText = "";
+const GEMINI_KEY = "AIzaSyCpuNXOGYXF5zpKfenMR3zqzGGlYRgoWn4";
+const GEMINI_URL =
+`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
+
+pdfInput.onchange = async (e) => {
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const pdf = await pdfjsLib.getDocument(new Uint8Array(reader.result)).promise;
+    let text = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(i => i.str).join(" ");
+    }
+    reportText = text;
+  };
+  reader.readAsArrayBuffer(e.target.files[0]);
+};
+
+async function analyze() {
+  const res = await fetch(GEMINI_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: reportText }] }]
+    })
+  });
+  const data = await res.json();
+  output.innerText = data.candidates[0].content.parts[0].text;
+}
+</script>
+
+</body>
+</html>
