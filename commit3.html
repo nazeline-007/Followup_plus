@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FollowUp+</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+
+<div class="container mx-auto max-w-3xl px-4 py-10">
+  <h1 class="text-4xl font-bold text-indigo-900 text-center">FollowUp+</h1>
+
+  <div class="bg-white p-6 rounded-lg shadow mt-8">
+    <input type="file" id="pdfInput" accept=".pdf">
+    <p id="pdfStatus" class="mt-4 text-gray-700"></p>
+  </div>
+</div>
+
+<script>
+let reportText = "";
+
+pdfInput.addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = async () => {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+    const pdf = await pdfjsLib.getDocument(new Uint8Array(reader.result)).promise;
+    let text = "";
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(i => i.str).join(" ");
+    }
+
+    reportText = text;
+    pdfStatus.innerText = "PDF loaded successfully";
+  };
+
+  reader.readAsArrayBuffer(file);
+});
+</script>
+
+</body>
+</html>
