@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FollowUp+</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+
+<div class="container mx-auto max-w-3xl px-4 py-10">
+  <h1 class="text-4xl font-bold text-indigo-900 text-center">FollowUp+</h1>
+
+  <div id="auth" class="bg-white p-6 rounded-lg shadow mt-8">
+    <input id="email" class="w-full border p-2 rounded mb-4" placeholder="Email">
+    <input id="password" type="password" class="w-full border p-2 rounded mb-4" placeholder="Password">
+    <button onclick="login()" class="w-full bg-indigo-600 text-white py-2 rounded mb-2">Login</button>
+    <button onclick="signup()" class="w-full bg-green-600 text-white py-2 rounded">Sign Up</button>
+  </div>
+
+  <p id="status" class="text-center mt-4 text-gray-700"></p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+ const firebaseConfig = {
+  apiKey: "AIzaSyCsjJYbPAZ8K_lAuNBIDuFF_k94yeof0mE",
+  authDomain: "followupplus-b8224.firebaseapp.com",
+  projectId: "followupplus-b8224",
+  storageBucket: "followupplus-b8224.firebasestorage.app",
+  messagingSenderId: "814412775080",
+  appId: "1:814412775080:web:e254ec80eb7800440f0c9d",
+  measurementId: "G-8EJJS8P38D"
+  };
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.login = async () => {
+  await signInWithEmailAndPassword(auth, email.value, password.value);
+  status.innerText = "Logged in successfully";
+};
+
+window.signup = async () => {
+  await createUserWithEmailAndPassword(auth, email.value, password.value);
+  status.innerText = "Account created";
+};
+</script>
+
+</body>
+</html>
